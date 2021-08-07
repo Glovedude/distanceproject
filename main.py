@@ -167,7 +167,7 @@ def test(fromAddress, truck):
                     if myHash.search(id) is not None:
                         # print(myHash.search(id))
                         if nextAddress == myHash.search(id).address:
-                            return distanceBetween(fromAddress, nextAddress)
+                            return
 
 
 
