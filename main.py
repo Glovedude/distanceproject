@@ -93,18 +93,19 @@ def loadPackageData(fileName):
             pNotes = package[7]
             pStatus = 'At Hub'
             p = Package(pID, pAddress, pCity, pState, pZip, pDeadline, pMass, pNotes, pStatus)
-            print(pAddress) # prints address only for each key
+            print(pAddress)  # prints address only for each key
 
             myHash.insert(pID, p)  # insert data into hash table
+
 
 myHash = ChainingHashTable()
 
 loadPackageData('WGUPSPackageData.csv')
 
-print("Package info:") # hash table header
+print("Package info:")  # hash table header
 
 for i in range(len(myHash.table)):
-    print("Package: {}".format(myHash.search(i))) #print each line of package data
+    print("Package: {}".format(myHash.search(i)))  # print each line of package data
 
 
 
@@ -113,105 +114,51 @@ with open('distanceTable.csv', 'r') as distanceData:
     csv_reader = csv.reader(distanceData)
     distanceData = list(csv_reader)
 print(distanceData)
-distanceDataFloat = [[float(x) for x in e] for e in distanceData]
-
-'''
-for element in distances:
-    print(element)
-'''
+distanceDataFloat = [[float(x) for x in e] for e in distanceData]  # put data as float
 
 
 # input addressdata as list, include only address itself
-with open('addressdata.csv', 'r') as addressData:
-    csv_reader = csv.reader(addressData)
-    addressData = list(csv_reader)
+addressData=[]
+with open('addressdata.csv', 'r') as addressList:
+    csv_reader = csv.reader(addressList)
+    for data in csv_reader:
+        addressData.append(data[2])  # sets address in it's own table for below function to find
 
 
 def distanceBetween(address1, address2):
-        return distanceData[addressData.index(address1)][addressData.index(address2)]
+    return distanceDataFloat[addressData.index(address1)][addressData.index(address2)]
 
+print(distanceBetween('4001 South 700 East', '1060 Dalton Ave S'))
 
-
-def minimumDistance(fromAddress, truck):
-
-    return distanceBetween()
-
-
-
-
-'''use in. Set the value to a row, then use in to search for that row in distanceTable'''
-
-
-
-def test(fromAddress, truck):
-    i = -1
-    x = -1
-    for row in addressData: # find row with matching address, iterate i, and return i as key for distancedata
-        i += 1
-        for field in row:
-            if field == fromAddress:
-                milesList = distanceDataFloat[i]
-                milesList= sorted(milesList, key = lambda x:float(x)) # sort acsending
-                milesList.remove(0) # remove 0.0
-                minDistance = milesList.pop(0) # set lowest non-zero distance as min
-                print(minDistance) # test for accuracy
-
-                minDistanceIndex = distanceDataFloat[i].index(minDistance) # find index of min distance
-                print(minDistanceIndex) # test
-
-                nextAddress = addressData[minDistanceIndex][2]
-                print(nextAddress)
-                # find address of index of min distance. if not found, look at next smallest
-
-                for id in truck:
-                    if myHash.search(id) is not None:
-                        # print(myHash.search(id))
-                        if nextAddress == myHash.search(id).address:
-                            return
-
-
-
-
-            else: # if address not found, continue. may need to include break option....
-                continue
-
-'''
-def truckTest(truck):
-    for id in truck:
-        if myHash.search(id) is not None:
-            # print(myHash.search(id))
-            return (myHash.search(id).address)
-'''
-
-
-# do the above, but loop through all packages on a truck and find min address for ALL packages, just like
-# above, but more focused on the truck. Then the new address becomes from address, but that might be in deliver function
-# then you can work on deliver class
-
-
-# minimumDistance(HUB, 1)
-# minimum distance from. Iterate through a row to find the least address
-# track minimum distance: take from object and look through all truck package addressess and finds minimum distances by calling
-# distancebetween you want to find minimum distance address IN THAT TRUCK
-# track where you are at
-
-
+def minimumDistanceFrom(fromAddress, truckPackages):
+    # loop through packages
+    nextPackageID = 0
+    nextPackageAddress = ''
+    minDistance = 1000
+    for packageid in truckPackages:
+        packageAddress = myHash.search(packageid).address
+        distance = distanceBetween(fromAddress, packageAddress)
+        if distance < minDistance:
+            minDistance = distance
+            nextPackageID = packageid
+            nextPackageAddress = packageAddress
+    return nextPackageID, nextPackageAddress, minDistance
 
 
 
 Truck1 = [
-"Truck 1 Packages:", 0, 1, 3, 4, 6, 7, 9, 12, 13, 15, 19, 25, 28, 29, 30, 33
+0, 1, 3, 4, 6, 7, 9, 12, 13, 15, 19, 25, 28, 29, 30, 33
 ]
 
 Truck2 = [
-"Truck 2 Packages:", 2, 5, 10, 11, 14, 16, 17, 18, 20, 21, 22, 24, 27, 31, 35, 37
+2, 5, 10, 11, 14, 16, 17, 18, 20, 21, 22, 24, 27, 31, 35, 37
 ]
 
 Unloaded = [
-"Unloaded:", 8, 25, 26, 32, 34, 36, 38
+8, 25, 26, 32, 34, 36, 38
 ]
 
-test('3365 S 900 W', Truck2)
+
 
 print("\nCurrent package loading status: \n")
 print(Truck1, "\n")
@@ -224,15 +171,15 @@ else:
 
 
 
-
-
 def packageDelivery(truck):
     DistanceTraveled = 0
-    currentAddress = "HUB"
+    currentAddress = "4001 South 700 East"
     i = 0
-# call minimum distance from packages in the truck
-    for id in truck: #loop through package ids, not the amount of packages
-        return
+
+    for id in truck:
+        print(minimumDistanceFrom(currentAddress, truck))
+        currentAddress = nextPackageAddress
+
         # below just tells you the packages, we need to find the next closest package
         # nextlocation = str(myHash.search(truck.pop(0))) #not pop, do call min distance from, wcich will call distance betwwen, which returns minumum
 
@@ -240,8 +187,8 @@ def packageDelivery(truck):
         print("No more packages loaded")
 
 print("Delivering via Truck 1")
-packageDelivery(Truck1)
-
+print(packageDelivery(Truck1))
+# call mindistance from with this, then miles and time, may need to call min distance again until truck is empty
 
 # use this to update hash table when delivered, be sure to implement datetime library first
 
@@ -251,4 +198,3 @@ print('this is for navigation. beep bop boop')
 print(myHash.search(1).address) # just do myHash.search(i).fjdklsajf to find any of the data
 # myHash.insert((1).status) = 'Test' #play withl this more, this is the insert ideas
 # print(myHash.search(1)) will print the entire hash section
-
