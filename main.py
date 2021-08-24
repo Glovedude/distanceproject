@@ -1,7 +1,5 @@
 import csv
-
-
-
+import datetime
 
 class ChainingHashTable:
 
@@ -146,55 +144,122 @@ def minimumDistanceFrom(fromAddress, truckPackages):
 
 
 
+
 Truck1 = [
-0, 1, 3, 4, 6, 7, 9, 12, 13, 15, 19, 25, 28, 29, 30, 33
+0, 1, 3, 4, 6, 7, 12, 13, 15, 19, 25, 28, 29, 30, 33, 39
 ]
+for id in Truck1:
+    myHash.search(id).status = "Loaded on Truck"
 
 Truck2 = [
-2, 5, 10, 11, 14, 16, 17, 18, 20, 21, 22, 24, 27, 31, 35, 37
+2, 5, 9, 10, 11, 14, 16, 17, 18, 20, 21, 22, 24, 27, 31, 35, 37
 ]
 
-Unloaded = [
-8, 25, 26, 32, 34, 36, 38
+for id in Truck2:
+    myHash.search(id).status = "Loaded on Truck"
+
+Truck3 = [
+8, 23, 25, 26, 32, 34, 36, 38
 ]
 
+for id in Truck3:
+    myHash.search(id).status = "Loaded on Truck"
 
 
 print("\nCurrent package loading status: \n")
-print(Truck1, "\n")
-print(Truck2, "\n")
-if Unloaded == ["Unloaded:"]:
-    print("there are no more packages to load.\n")
-else:
-    print(Unloaded, "\n")
+print("Truck One: ", Truck1, "\n")
+print("Truck Two: ", Truck2, "\n")
+print("Truck Three: ", Truck3, "\n")
 
 
 
+DistanceTraveled = 0.0
+currentAddress = "4001 South 700 East"
+DistanceTraveledTime = 0.0
+'''
+time_stamp = datetime.timedelta(hours=8, minutes=0, seconds=0)
+time_stamp2 = datetime.timedelta(hours=0, minutes=0, seconds=0)
+# time_stamp = time_stamp + time_stamp2
+print(time_stamp)
+'''
+time = 8.0
+t = datetime.time(8, 0, 0)
 
 def packageDelivery(truck):
-    DistanceTraveled = 0
-    currentAddress = "4001 South 700 East"
+    global DistanceTraveled
+    global currentAddress
+    global time
+
+    nextDistance = 0
     i = 0
 
-    for id in truck:
-        print(minimumDistanceFrom(currentAddress, truck))
-        currentAddress = nextPackageAddress
 
-        # below just tells you the packages, we need to find the next closest package
-        # nextlocation = str(myHash.search(truck.pop(0))) #not pop, do call min distance from, wcich will call distance betwwen, which returns minumum
+
+
+    for id in truck:
+        if id == minimumDistanceFrom(currentAddress, truck)[0]:
+            DistanceTraveled += minimumDistanceFrom(currentAddress, truck)[2]
+            nextDistance = minimumDistanceFrom(currentAddress, truck)[2]
+            currentAddress = minimumDistanceFrom(currentAddress, truck)[1]
+
+            # calculate speed and update time
+
+            time += nextDistance/18
+            # print(round(time, 2))
+            timeFinal = ('{0:02.0f}:{1:02.0f}'.format(*divmod(float(time) * 60, 60)))
+            myHash.search(id).status = (timeFinal)
+
+
+            # remove id and print what's left as well as current location
+            truck.remove(id)
+            # print(truck)
+            print('Delivering package: ', id, ' Current address: ', currentAddress,
+                  ' Total distance traveled: ', round(DistanceTraveled, 2), ' Delivered at: ', timeFinal)
+
+
+            # repeat until truck is empty
+            packageDelivery(truck)
 
     else:
-        print("No more packages loaded")
+
+        return ("Truck is empty, returning to HUB\n\n")
+
+
 
 print("Delivering via Truck 1")
+# print(packageDelivery(Truck0))
+
 print(packageDelivery(Truck1))
-# call mindistance from with this, then miles and time, may need to call min distance again until truck is empty
+DistanceTraveled += distanceBetween(currentAddress, "4001 South 700 East") # return to hub and add return mileage
 
-# use this to update hash table when delivered, be sure to implement datetime library first
+print("Delivering via Truck 2")
+print(packageDelivery(Truck2))
+DistanceTraveled += distanceBetween(currentAddress, "4001 South 700 East")
 
-#miles and time will be different functions
+print("Delivering via Truck 3")
+print(packageDelivery(Truck3))
+DistanceTraveled += distanceBetween(currentAddress, "4001 South 700 East")
 
-print('this is for navigation. beep bop boop')
-print(myHash.search(1).address) # just do myHash.search(i).fjdklsajf to find any of the data
-# myHash.insert((1).status) = 'Test' #play withl this more, this is the insert ideas
-# print(myHash.search(1)) will print the entire hash section
+
+print("Total distance traveled: ",round(DistanceTraveled, 2))
+
+
+fakeTimes = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,
+             31,32,33,34,35,36,37,38,39]
+
+
+test = []
+
+for id in fakeTimes:
+    test.append((myHash.search(id).status).replace(':', ''))
+    # print(test)
+
+userinput = input("Enter a time to check package status (Must be in 24hr format. e.g. 0930): ")
+def condition(x): return x < userinput
+testoutput = [idx for idx, element in enumerate(test) if condition(element)]
+
+for id in testoutput:
+    print(myHash.search(id))
+
+
+
